@@ -19,3 +19,6 @@ now user can open another pages `/trending` for see this information
 - overview
 
  `/search` to see id and title for movies, `/genres` Displays the movie type, and you can also view famous people when you use `/popular`
+
+ ## Add Database
+ in this project now you have database for get data and send data, So when you use `/getMovies` in url, data is appeared, and when you need send a new data you should use in url `/addMovie` in thunder becouse it's have post methode for send data for database.
