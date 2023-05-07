@@ -1,22 +1,30 @@
+'use strict'
+
 const express = require('express');
 const server = express();
 const axios = require('axios');
 const PORT = 3000;
 const cors = require('cors');
 require('dotenv').config();
+const pg = require('pg');
 const APIKey = process.env.APIKey;
 server.use(cors())
 const data = require('./Movie Data/data.json');
 
+server.use(express.json())
+const client = new pg.Client('postgresql://localhost:5432/lab15')
 
 server.get('/', homeHandler)
 server.get('/favorite', favoriteHandler)
-server.get('/error', Error500)
-// server.get('*', Error400)
 server.get('/trending', trendingHandler)
 server.get('/search', searchHandler)
 server.get('/genres', genresHandler)
 server.get('/popular', popularHandler)
+server.get('/getMovies', getMoviesHandler)
+server.post('/addMovie', addMoviesHandler)
+server.get('/error', Error500)
+server.get('*', Error400)
+
 
 function homeHandler(req, res) {
   let home = new movie(data.title, data.poster_path, data.overview)
@@ -134,6 +142,34 @@ function popularHandler(req, res) {
 }
 
 
+function getMoviesHandler(req, res){
+  const sql = `SELECT * FROM movie`;
+  client.query(sql)
+  .then(data=>{
+      res.send(data.rows);
+  })
+
+  .catch((error)=>{
+    Error500(error,req,res)
+  })
+}
+
+function addMoviesHandler(req, res){
+  const movie = req.body;
+    console.log(movie);
+    const sql = `INSERT INTO addMovie (title, mins)
+    VALUES ($1, $2);`
+    const values = [movie.title , movie.mins]; 
+    client.query(sql,values)
+    .then(data=>{
+        res.send("The data has been added successfully");
+    })
+    .catch((error)=>{
+      Error500(error,req,res)
+    })
+}
+
+
 function dataTrending(id, title, release_date, poster_path, overview) {
   this.id = id;
   this.title = title;
@@ -157,6 +193,9 @@ function dataPopular(name ,gender) {
   this.gender = gender;
 }
 
+client.connect()
+.then(()=>{
 server.listen(PORT, () => {
-  console.log(`Listening on ${PORT}: I'm ready`);
-});
+  console.log(`Listening on ${PORT}: I'm ready`)
+  })
+})
