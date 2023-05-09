@@ -22,6 +22,9 @@ server.get('/genres', genresHandler)
 server.get('/popular', popularHandler)
 server.get('/getMovies', getMoviesHandler)
 server.post('/addMovie', addMoviesHandler)
+server.put('/UPDATE/:id',updateHandler)
+server.delete('/DELETE/:id',deleteHandler)
+server.get('/getMovies/:id', getMovieById)
 server.get('/error', Error500)
 server.get('*', Error400)
 
@@ -169,6 +172,51 @@ function addMoviesHandler(req, res){
     })
 }
 
+function updateHandler(req,res){
+    
+  const {id} = req.params;
+  console.log(req.body);
+  const sql = `UPDATE addMovie
+  SET title = $1, mins = $2
+  WHERE id = ${id};`
+  const {title, mins} = req.body;
+  const values = [title, mins];
+  client.query(sql,values).then((data)=>{
+      res.send(data)
+  })
+  .catch((error)=>{
+    Error500(error,req,res)
+  })
+}
+
+function deleteHandler(req,res){
+  const id = req.params.id;
+  console.log(req.params);
+  const sql = `DELETE FROM addMovie WHERE id=${id};`
+  client.query(sql)
+  .then((data)=>{
+    res.status(202).send(data)
+  })
+  .catch((error)=>{
+    Error500(error,req,res)
+  })
+}
+
+
+function getMovieById(req, res) {
+  const {id} = req.params;
+  console.log(id)
+  const sql = `SELECT * FROM addMovie
+  WHERE id=${id};`;
+  client.query(sql)
+  .then(data=>{
+      res.send(data.rows);
+  })
+
+  .catch((error)=>{
+    Error500(error,req,res)
+  })
+}
 
 function dataTrending(id, title, release_date, poster_path, overview) {
   this.id = id;

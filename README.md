@@ -22,3 +22,9 @@ now user can open another pages `/trending` for see this information
 
  ## Add Database
  in this project now you have database for get data and send data, So when you use `/getMovies` in url, data is appeared, and when you need send a new data you should use in url `/addMovie` in thunder becouse it's have post methode for send data for database.
+
+ ## new request to the database
+
+now you can update the database when you use `/UPDATE/id` in `put` url and you can delete the movies from your database if use `/DELETE/id`.
+
+if you need get the Movie you should type **`id`** for any movie and all information is getting.
